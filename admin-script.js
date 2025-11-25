@@ -56,13 +56,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 设置 Firebase 监听器
 function setupFirebaseListeners() {
+    // 监听连接状态
+    database.ref('.info/connected').on('value', (snapshot) => {
+        const connected = snapshot.val();
+        updateConnectionStatus(connected);
+    });
+
     // 监听参与者数据变化
-    db.collection('clients').onSnapshot((snapshot) => {
+    database.ref('clients').on('value', (snapshot) => {
         participants = [];
-        snapshot.forEach((doc) => {
+        const data = snapshot.val() || {};
+        Object.keys(data).forEach(key => {
             participants.push({
-                id: doc.id,
-                ...doc.data()
+                id: key,
+                ...data[key]
             });
         });
         updateStats();
@@ -70,17 +77,32 @@ function setupFirebaseListeners() {
     });
 
     // 监听获奖者数据变化
-    db.collection('winners').onSnapshot((snapshot) => {
+    database.ref('winners').on('value', (snapshot) => {
         winners = [];
-        snapshot.forEach((doc) => {
+        const data = snapshot.val() || {};
+        Object.keys(data).forEach(key => {
             winners.push({
-                id: doc.id,
-                ...doc.data()
+                id: key,
+                ...data[key]
             });
         });
         updateStats();
         displayWinners();
     });
+}
+
+// 更新连接状态显示
+function updateConnectionStatus(connected) {
+    const statusElement = document.getElementById('connectionStatus');
+    if (statusElement) {
+        if (connected) {
+            statusElement.textContent = translations[currentLanguage].connected;
+            statusElement.style.color = '#4CAF50';
+        } else {
+            statusElement.textContent = translations[currentLanguage].disconnected;
+            statusElement.style.color = '#F44336';
+        }
+    }
 }
 
 // 切换语言
