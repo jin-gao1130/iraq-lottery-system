@@ -31,7 +31,7 @@
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">الجوائز المتبقية:</span>
-                    <span id="prizesRemaining">10</span>
+                    <span id="prizesRemaining">8</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">الفائزون حتى الآن:</span>
@@ -44,18 +44,7 @@
                 <span id="connectionStatus">جاري الاتصال...</span>
             </div>
             
-            <!-- 数据导入区域 -->
-            <div class="data-import-section">
-                <h3>استيراد البيانات</h3>
-                <p>انسخ البيانات من صفحة التسجيل والصقها هنا:</p>
-                <textarea id="importData" placeholder="الصق بيانات التسجيل هنا..." rows="5"></textarea>
-                <div class="import-controls">
-                    <button onclick="importData()">استيراد البيانات</button>
-                    <button onclick="clearImport()">مسح</button>
-                </div>
-                <div id="importResult" class="import-result"></div>
-            </div>
-            
+           
             <div class="lottery-display">
                 <div id="currentDisplay" class="current-display">
                     جاهز للبدء...
@@ -67,17 +56,7 @@
                 <button id="stopButton" onclick="stopLottery()" disabled>توقف واختيار الفائز</button>
                 <button onclick="resetLottery()">إعادة تعيين السحب</button>
             </div>
-            
-            <div class="participants-section">
-                <h2>قائمة المشاركين (<span id="participantsCount">0</span>)</h2>
-                <div id="participantsList" class="participants-list"></div>
-            </div>
-            
-            <div class="winners-section">
-                <h2>الفائزون (<span id="winnersListCount">0</span>)</h2>
-                <div id="winnersList" class="winners-list"></div>
-            </div>
-            
+
             <div class="language-switcher">
                 <button onclick="switchLanguage('en')">English</button>
                 <button onclick="switchLanguage('ar')">العربية</button>
