@@ -66,7 +66,7 @@ function applyTranslations(lang) {
     document.querySelectorAll('.event-info p')[1].textContent = t.eventInfo2;
 }
 
-// 注册客户 - 使用Firestore
+// 注册客户 - 使用 Realtime Database
 async function registerClient() {
     const nameInput = document.getElementById('clientName');
     const name = nameInput.value.trim();
@@ -78,22 +78,25 @@ async function registerClient() {
     
     try {
         // 检查是否已经注册
-        const clientsRef = db.collection('clients');
-        const snapshot = await clientsRef
-            .where('name', '==', name)
-            .get();
+        const snapshot = await database.ref('clients').orderByChild('name').equalTo(name).once('value');
+        const existingData = snapshot.val();
         
-        if (!snapshot.empty) {
+        if (existingData) {
             showRegistrationResult(translations[currentLanguage].alreadyRegistered, 'info');
             nameInput.value = '';
             return;
         }
         
-        // 保存到 Firestore
-        await clientsRef.add({
+        // 生成唯一ID
+        const id = Date.now().toString(); // 使用时间戳作为简单ID
+        
+        // 保存到 Realtime Database
+        await database.ref('clients/' + id).set({
             name: name,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            registered: true
+            id: id,
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            registered: true,
+            won: false
         });
         
         showRegistrationResult(translations[currentLanguage].registrationSuccess, 'success');
@@ -133,3 +136,4 @@ function showRegistrationResult(message, type) {
         resultDiv.style.borderColor = 'rgba(33, 150, 243, 0.3)';
     }
 }
+
