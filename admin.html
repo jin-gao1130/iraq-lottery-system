@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <!-- 添加 Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
 </head>
 <body>
@@ -44,7 +44,6 @@
                 <span id="connectionStatus">جاري الاتصال...</span>
             </div>
             
-           
             <div class="lottery-display">
                 <div id="currentDisplay" class="current-display">
                     جاهز للبدء...
@@ -56,7 +55,17 @@
                 <button id="stopButton" onclick="stopLottery()" disabled>توقف واختيار الفائز</button>
                 <button onclick="resetLottery()">إعادة تعيين السحب</button>
             </div>
-
+            
+            <div class="participants-section">
+                <h2>قائمة المشاركين (<span id="participantsCount">0</span>)</h2>
+                <div id="participantsList" class="participants-list"></div>
+            </div>
+            
+            <div class="winners-section">
+                <h2>الفائزون (<span id="winnersListCount">0</span>)</h2>
+                <div id="winnersList" class="winners-list"></div>
+            </div>
+            
             <div class="language-switcher">
                 <button onclick="switchLanguage('en')">English</button>
                 <button onclick="switchLanguage('ar')">العربية</button>
