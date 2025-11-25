@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "danaher-lottery",
     "public": ".",
     "ignore": [
       "firebase.json",
