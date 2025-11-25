@@ -1,4 +1,4 @@
-// register-script.js - 简化版本 (移除了管理员功能)
+// register-script.js - 恢复原有逻辑
 const translations = {
     en: {
         registrationTitle: "Client Registration",
@@ -8,8 +8,8 @@ const translations = {
         eventInfoTitle: "Event Information",
         eventInfo1: "The lottery will be held at the end of the meeting and winners will be announced on stage.",
         eventInfo2: "Participants who have already won will be excluded from subsequent rounds.",
-        registrationSuccess: "Registration successful!",
-        alreadyRegistered: "You are already registered!",
+        registrationSuccess: "Registration successful! Your lottery number is:",
+        alreadyRegistered: "You are already registered! Your number is:",
         nameRequired: "Please enter your name",
         connectionError: "Connection error, please try again"
     },
@@ -21,8 +21,8 @@ const translations = {
         eventInfoTitle: "معلومات الفعالية",
         eventInfo1: "سيتم إجراء السحب في نهاية الاجتماع وسيتم الإعلان عن الفائزين على المسرح.",
         eventInfo2: "سيتم استبعاد المشاركين الذين فازوا بالفعل من الجولات اللاحقة.",
-        registrationSuccess: "تم التسجيل بنجاح!",
-        alreadyRegistered: "أنت مسجل بالفعل!",
+        registrationSuccess: "تم التسجيل بنجاح! رقم السحب الخاص بك هو:",
+        alreadyRegistered: "أنت مسجل بالفعل! رقمك هو:",
         nameRequired: "يرجى إدخال اسمك",
         connectionError: "خطأ في الاتصال، يرجى المحاولة مرة أخرى"
     }
@@ -66,7 +66,20 @@ function applyTranslations(lang) {
     document.querySelectorAll('.event-info p')[1].textContent = t.eventInfo2;
 }
 
-// 注册客户 - 使用 Realtime Database
+// 生成唯一ID (4位随机数)
+function generateUniqueId(participants) {
+    let id;
+    let isUnique = false;
+    
+    while (!isUnique) {
+        id = Math.floor(Math.random() * 9000) + 1000; // 生成1000-9999之间的随机数
+        isUnique = !participants[id];
+    }
+    
+    return id;
+}
+
+// 注册客户 - 使用Realtime Database
 async function registerClient() {
     const nameInput = document.getElementById('clientName');
     const name = nameInput.value.trim();
@@ -78,36 +91,39 @@ async function registerClient() {
     
     try {
         // 检查是否已经注册
-        const snapshot = await database.ref('clients').orderByChild('name').equalTo(name).once('value');
-        const existingData = snapshot.val();
+        const snapshot = await database.ref('participants').once('value');
+        const participants = snapshot.val() || {};
         
-        if (existingData) {
-            showRegistrationResult(translations[currentLanguage].alreadyRegistered, 'info');
+        const existingParticipant = Object.values(participants).find(
+            p => p.name.toLowerCase() === name.toLowerCase()
+        );
+        
+        if (existingParticipant) {
+            showRegistrationResult(
+                `${translations[currentLanguage].alreadyRegistered} ${existingParticipant.id}`, 
+                'info'
+            );
             nameInput.value = '';
             return;
         }
         
         // 生成唯一ID
-        const id = Date.now().toString(); // 使用时间戳作为简单ID
+        const id = generateUniqueId(participants);
+        const participant = { 
+            name, 
+            id, 
+            won: false,
+            timestamp: Date.now()
+        };
         
-        // 保存到 Realtime Database
-        await database.ref('clients/' + id).set({
-            name: name,
-            id: id,
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
-            registered: true,
-            won: false
-        });
+        // 保存到 Firebase
+        await database.ref('participants/' + id).set(participant);
         
-        showRegistrationResult(translations[currentLanguage].registrationSuccess, 'success');
+        showRegistrationResult(
+            `${translations[currentLanguage].registrationSuccess} ${id}`, 
+            'success'
+        );
         nameInput.value = '';
-        
-        // 3秒后清除成功消息
-        setTimeout(() => {
-            const resultDiv = document.getElementById('registrationResult');
-            resultDiv.textContent = '';
-            resultDiv.className = 'registration-result';
-        }, 3000);
         
     } catch (error) {
         console.error('Registration error:', error);
@@ -136,4 +152,3 @@ function showRegistrationResult(message, type) {
         resultDiv.style.borderColor = 'rgba(33, 150, 243, 0.3)';
     }
 }
-
