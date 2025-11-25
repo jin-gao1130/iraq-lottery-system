@@ -277,7 +277,6 @@ button:disabled {
     }
 }
 
-
 .language-switcher {
     text-align: center;
     margin: 20px 0;
@@ -486,27 +485,12 @@ button:disabled {
     font-size: 14px;
 }
 
-.admin-access {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.admin-access button {
-    background-color: #4CAF50;
-}
-
-.admin-access button:hover {
-    background-color: #45a049;
-}
-
 /* 阿拉伯语特定样式 */
 [dir="rtl"] {
     text-align: right;
 }
 
 [dir="rtl"] .registration-form,
-[dir="rtl"] .lottery-controls,
-[dir="rtl"] .export-controls,
-[dir="rtl"] .import-controls {
+[dir="rtl"] .lottery-controls {
     flex-direction: row-reverse;
 }
