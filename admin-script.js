@@ -1,4 +1,4 @@
-// admin-script.js - 修改后的版本
+// admin-script.js - 简化版本 (移除了数据导入功能)
 const translations = {
     en: {
         adminTitle: "Lottery Admin Panel",
@@ -12,6 +12,8 @@ const translations = {
         noParticipants: "No participants available",
         allPrizesAwarded: "All prizes have been awarded!",
         winnerText: "WINNER!",
+        participantsList: "Participants List",
+        winnersTitle: "Winners",
         connected: "Connected - Real-time",
         disconnected: "Disconnected",
         connecting: "Connecting..."
@@ -25,10 +27,11 @@ const translations = {
         startButton: "بدء السحب",
         stopButton: "توقف واختيار الفائز",
         resetButton: "إعادة تعيين السحب",
-        importError: "خطأ في استيراد البيانات. يرجى التحقق من التنسيق.",
         noParticipants: "لا يوجد مشاركون متاحون",
         allPrizesAwarded: "تم منح جميع الجوائز!",
         winnerText: "فائز!",
+        participantsList: "قائمة المشاركين",
+        winnersTitle: "الفائزون",
         connected: "متصل - تحديث فوري",
         disconnected: "غير متصل",
         connecting: "جاري الاتصال..."
@@ -36,8 +39,8 @@ const translations = {
 };
 
 let currentLanguage = 'ar';
-let participants = {};
-let winners = {};
+let participants = [];
+let winners = [];
 let lotteryInterval;
 let isLotteryRunning = false;
 const TOTAL_PRIZES = 8;
@@ -53,32 +56,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 设置 Firebase 监听器
 function setupFirebaseListeners() {
-    // 监听连接状态
-    database.ref('.info/connected').on('value', (snapshot) => {
-        const connected = snapshot.val();
-        const statusElement = document.getElementById('connectionStatus');
-        
-        if (statusElement) {
-            if (connected) {
-                statusElement.textContent = translations[currentLanguage].connected;
-                statusElement.style.color = '#4CAF50';
-            } else {
-                statusElement.textContent = translations[currentLanguage].disconnected;
-                statusElement.style.color = '#F44336';
-            }
-        }
-    });
-
     // 监听参与者数据变化
-    database.ref('participants').on('value', (snapshot) => {
-        participants = snapshot.val() || {};
+    db.collection('clients').onSnapshot((snapshot) => {
+        participants = [];
+        snapshot.forEach((doc) => {
+            participants.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
         updateStats();
         displayParticipants();
     });
 
     // 监听获奖者数据变化
-    database.ref('winners').on('value', (snapshot) => {
-        winners = snapshot.val() || {};
+    db.collection('winners').onSnapshot((snapshot) => {
+        winners = [];
+        snapshot.forEach((doc) => {
+            winners.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
         updateStats();
         displayWinners();
     });
@@ -106,39 +105,49 @@ function applyTranslations(lang) {
     document.getElementById('startButton').textContent = t.startButton;
     document.getElementById('stopButton').textContent = t.stopButton;
     document.querySelectorAll('.lottery-controls button')[2].textContent = t.resetButton;
+    document.querySelector('.participants-section h2').textContent = t.participantsList;
+    document.querySelector('.winners-section h2').textContent = t.winnersTitle;
+    
     // 如果没有运行抽奖，更新显示文本
     if (!isLotteryRunning) {
         document.getElementById('currentDisplay').textContent = t.readyText;
     }
+    
+    // 更新连接状态文本
+    const statusElement = document.getElementById('connectionStatus');
+    if (statusElement) {
+        statusElement.textContent = t.connected;
+        statusElement.style.color = '#4CAF50';
+    }
 }
-
-
 
 // 开始抽奖
 function startLottery() {
     if (isLotteryRunning) return;
     
-    const availableParticipants = Object.values(participants).filter(p => !p.won);
+    const availableParticipants = participants.filter(p => !p.won);
     
     if (availableParticipants.length === 0) {
         document.getElementById('currentDisplay').textContent = translations[currentLanguage].noParticipants;
         return;
     }
-	
-    if (Object.keys(winners).length >= TOTAL_PRIZES) {
+    
+    if (winners.length >= TOTAL_PRIZES) {
         document.getElementById('currentDisplay').textContent = translations[currentLanguage].allPrizesAwarded;
         return;
     }
+    
     isLotteryRunning = true;
     document.getElementById('startButton').disabled = true;
     document.getElementById('stopButton').disabled = false;
     
     lotteryInterval = setInterval(() => {
-        const available = Object.values(participants).filter(p => !p.won);
+        const available = participants.filter(p => !p.won);
         if (available.length === 0) {
             stopLottery();
             return;
         }
+        
         const randomIndex = Math.floor(Math.random() * available.length);
         const current = available[randomIndex];
         document.getElementById('currentDisplay').textContent = `${current.name} - ${current.id}`;
@@ -154,21 +163,26 @@ async function stopLottery() {
     document.getElementById('startButton').disabled = false;
     document.getElementById('stopButton').disabled = true;
     
-    const availableParticipants = Object.values(participants).filter(p => !p.won);
+    const availableParticipants = participants.filter(p => !p.won);
     
     if (availableParticipants.length === 0) {
         document.getElementById('currentDisplay').textContent = translations[currentLanguage].noParticipants;
         return;
     }
+    
     const winnerIndex = Math.floor(Math.random() * availableParticipants.length);
     const winner = availableParticipants[winnerIndex];
     
     try {
         // 标记为已获奖
-        await database.ref('participants/' + winner.id).update({ won: true });
+        await db.collection('clients').doc(winner.id).update({ won: true });
         
-        // 添加到获奖者列表
-        await database.ref('winners/' + winner.id).set(winner);
+        // 添加到获奖者集合
+        await db.collection('winners').doc(winner.id).set({
+            name: winner.name,
+            id: winner.id,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
         
         // 显示获奖者
         document.getElementById('currentDisplay').innerHTML = 
@@ -191,8 +205,18 @@ async function resetLottery() {
     
     if (confirm(confirmText)) {
         try {
-            await database.ref('participants').remove();
-            await database.ref('winners').remove();
+            // 删除所有参与者
+            const clientsSnapshot = await db.collection('clients').get();
+            clientsSnapshot.forEach((doc) => {
+                db.collection('clients').doc(doc.id).delete();
+            });
+            
+            // 删除所有获奖者
+            const winnersSnapshot = await db.collection('winners').get();
+            winnersSnapshot.forEach((doc) => {
+                db.collection('winners').doc(doc.id).delete();
+            });
+            
             document.getElementById('currentDisplay').textContent = translations[currentLanguage].readyText;
         } catch (error) {
             console.error('Error resetting lottery:', error);
@@ -203,9 +227,10 @@ async function resetLottery() {
 
 // 更新统计信息
 function updateStats() {
-    const totalParticipants = Object.keys(participants).length;
-    const winnersCount = Object.keys(winners).length;
+    const totalParticipants = participants.length;
+    const winnersCount = winners.length;
     const prizesRemaining = TOTAL_PRIZES - winnersCount;
+    
     document.getElementById('totalParticipants').textContent = totalParticipants;
     document.getElementById('prizesRemaining').textContent = prizesRemaining;
     document.getElementById('winnersCount').textContent = winnersCount;
@@ -213,13 +238,29 @@ function updateStats() {
     document.getElementById('winnersListCount').textContent = winnersCount;
 }
 
-
+// 显示参与者列表
+function displayParticipants() {
+    const participantsList = document.getElementById('participantsList');
+    participantsList.innerHTML = '';
+    
+    participants.forEach(participant => {
+        const participantCard = document.createElement('div');
+        participantCard.className = participant.won ? 'winner-card' : 'participant-card';
+        participantCard.innerHTML = `
+            <div class="${participant.won ? 'winner-name' : 'participant-name'}">${participant.name}</div>
+            <div class="${participant.won ? 'winner-id' : 'participant-id'}">${participant.id}</div>
+            ${participant.won ? '<div style="font-size:12px;margin-top:5px;">✓ فائز</div>' : ''}
+        `;
+        participantsList.appendChild(participantCard);
+    });
+}
 
 // 显示获奖者列表
 function displayWinners() {
     const winnersList = document.getElementById('winnersList');
     winnersList.innerHTML = '';
-    Object.values(winners).forEach(winner => {
+    
+    winners.forEach(winner => {
         const winnerCard = document.createElement('div');
         winnerCard.className = 'winner-card';
         winnerCard.innerHTML = `
@@ -236,17 +277,20 @@ function playWinnerSound() {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
+        
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
+        
         oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
         oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
         oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+        
         gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.5);
     } catch (e) {
         console.log('Audio not available');
     }
 }
-
