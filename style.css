@@ -1,0 +1,579 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 响应式背景图设置 */
+body {
+    background-image: url('danaher-pattern.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #AF272F;
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+        padding: 10px;
+    }
+    
+    body::before {
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+}
+
+/* 公司Logo头部 */
+.logo-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    border-bottom: 2px solid #AF272F;
+}
+
+@media (max-width: 768px) {
+    .logo-header {
+        height: 60px;
+        position: fixed;
+    }
+}
+
+.logo-container {
+    max-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .logo-container {
+        max-width: 150px;
+    }
+}
+
+.company-logo {
+    max-width: 100%;
+    height: auto;
+}
+
+.admin-badge {
+    position: absolute;
+    right: 20px;
+    background-color: #AF272F;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .admin-badge {
+        position: relative;
+        right: auto;
+        margin-left: 10px;
+        font-size: 12px;
+        padding: 3px 10px;
+    }
+}
+
+.container {
+    max-width: 900px;
+    margin: 80px auto 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+    border: 2px solid #AF272F;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 70px auto 10px;
+        padding: 20px;
+        border-radius: 10px;
+    }
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    color: #AF272F;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+}
+
+h2 {
+    margin: 20px 0 15px;
+    border-bottom: 2px solid #AF272F;
+    padding-bottom: 10px;
+    color: #AF272F;
+}
+
+@media (max-width: 768px) {
+    h2 {
+        margin: 15px 0 10px;
+        font-size: 1.5rem;
+    }
+}
+
+h3 {
+    color: #AF272F;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .subtitle {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+}
+
+.registration-section, .lottery-section {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.registration-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 30px 0;
+}
+
+@media (max-width: 768px) {
+    .registration-form {
+        flex-direction: column;
+        align-items: center;
+        margin: 20px 0;
+    }
+}
+
+input[type="text"] {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 250px;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+@media (max-width: 768px) {
+    input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+}
+
+/* 按钮使用Danaher品牌色 */
+button {
+    padding: 12px 25px;
+    background-color: #AF272F;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background-color: #8F1F27;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+@media (max-width: 768px) {
+    button {
+        width: 100%;
+        padding: 14px 25px;
+        font-size: 16px;
+    }
+}
+
+.registration-result {
+    text-align: center;
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(175, 39, 47, 0.1);
+    font-size: 18px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #AF272F;
+    border: 1px solid rgba(175, 39, 47, 0.3);
+}
+
+@media (max-width: 768px) {
+    .registration-result {
+        margin: 15px 0;
+        padding: 12px;
+        font-size: 16px;
+        min-height: 50px;
+    }
+}
+
+.event-info {
+    background-color: rgba(175, 39, 47, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 30px 0;
+    border: 1px solid rgba(175, 39, 47, 0.2);
+}
+
+.event-info p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .event-info {
+        padding: 15px;
+        margin: 20px 0;
+    }
+}
+
+/* 管理员导出区域 */
+.admin-export-section {
+    background-color: rgba(175, 39, 47, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 30px 0;
+    border: 1px solid rgba(175, 39, 47, 0.3);
+}
+
+.export-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.export-result {
+    text-align: center;
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(33, 150, 243, 0.1);
+    font-size: 16px;
+    color: #2196F3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+}
+
+/* 数据导入区域 */
+.data-import-section {
+    background-color: rgba(175, 39, 47, 0.05);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 30px 0;
+    border: 1px solid rgba(175, 39, 47, 0.3);
+}
+
+.data-import-section p {
+    margin-bottom: 10px;
+}
+
+.data-import-section textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.import-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.import-result {
+    text-align: center;
+    margin: 15px 0;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(76, 175, 80, 0.1);
+    font-size: 16px;
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.language-switcher {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.language-switcher button {
+    margin: 0 5px;
+    background-color: rgba(175, 39, 47, 0.8);
+}
+
+@media (max-width: 768px) {
+    .language-switcher {
+        margin: 15px 0;
+    }
+    
+    .language-switcher button {
+        width: auto;
+        margin: 5px;
+    }
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    background-color: rgba(175, 39, 47, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(175, 39, 47, 0.3);
+}
+
+@media (max-width: 768px) {
+    .stats {
+        flex-direction: column;
+        gap: 10px;
+        padding: 12px;
+        margin: 15px 0;
+    }
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.stat-item span:last-child {
+    font-size: 24px;
+    font-weight: bold;
+    color: #AF272F;
+}
+
+@media (max-width: 768px) {
+    .stat-item span:last-child {
+        font-size: 20px;
+    }
+}
+
+.lottery-display {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef, #dee2e6);
+    border-radius: 15px;
+    padding: 40px 20px;
+    margin: 30px 0;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border: 3px solid #AF272F;
+}
+
+@media (max-width: 768px) {
+    .lottery-display {
+        padding: 30px 15px;
+        margin: 20px 0;
+        border-radius: 10px;
+    }
+}
+
+.current-display {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #AF272F;
+    text-shadow: 0 0 10px rgba(175, 39, 47, 0.3);
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .current-display {
+        font-size: 2.5rem;
+        min-height: 100px;
+    }
+}
+
+.lottery-controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .lottery-controls {
+        margin: 20px 0;
+        gap: 10px;
+    }
+}
+
+.participants-section, .winners-section {
+    margin: 30px 0;
+}
+
+@media (max-width: 768px) {
+    .participants-section, .winners-section {
+        margin: 20px 0;
+    }
+}
+
+.participants-list, .winners-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+    .participants-list, .winners-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+}
+
+.participant-card, .winner-card {
+    background-color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+}
+
+.winner-card {
+    background: linear-gradient(135deg, #AF272F, #8F1F27);
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.participant-card .participant-name,
+.winner-card .winner-name {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.participant-card .participant-id,
+.winner-card .winner-id {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .participant-card, .winner-card {
+        padding: 12px;
+        border-radius: 8px;
+    }
+    
+    .participant-card .participant-name,
+    .winner-card .winner-name {
+        font-size: 16px;
+    }
+    
+    .participant-card .participant-id,
+    .winner-card .winner-id {
+        font-size: 13px;
+    }
+}
+
+/* 连接状态样式 */
+.connection-status {
+    text-align: center;
+    margin: 10px 0;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: rgba(33, 150, 243, 0.1);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.admin-access {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.admin-access button {
+    background-color: #4CAF50;
+}
+
+.admin-access button:hover {
+    background-color: #45a049;
+}
+
+/* 阿拉伯语特定样式 */
+[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .registration-form,
+[dir="rtl"] .lottery-controls,
+[dir="rtl"] .export-controls,
+[dir="rtl"] .import-controls {
+    flex-direction: row-reverse;
+}

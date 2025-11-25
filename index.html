@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danaher Client Registration</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 添加 Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- 公司Logo区域 -->
+    <div class="logo-header">
+        <div class="logo-container">
+            <img src="danaher-logo.png" alt="Danaher Logo" class="company-logo">
+        </div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="container">
+        <div class="registration-section">
+            <h1>تسجيل العملاء</h1>
+            <p class="subtitle">يرجى مسح الرمز الضوئي وتسجيل اسمك للمشاركة في السحب</p>
+            
+            <div class="registration-form">
+                <input type="text" id="clientName" placeholder="أدخل اسمك" maxlength="30">
+                <button onclick="registerClient()">تسجيل</button>
+            </div>
+            
+            <div id="registrationResult" class="registration-result"></div>
+            
+            <div class="event-info">
+                <h3>معلومات الفعالية</h3>
+                <p>سيتم إجراء السحب في نهاية الاجتماع وسيتم الإعلان عن الفائزين على المسرح.</p>
+                <p>سيتم استبعاد المشاركين الذين فازوا بالفعل من الجولات اللاحقة.</p>
+            </div>
+            
+            <!-- 管理员导出区域 - 默认隐藏 -->
+            <div class="admin-export-section" id="adminExportSection" style="display: none;">
+                <h3>إدارة البيانات (للمسؤول فقط)</h3>
+                <div class="export-controls">
+                    <button onclick="exportData()">تصدير البيانات</button>
+                    <button onclick="resetAllData()">مسح جميع البيانات</button>
+                    <button onclick="hideAdminSection()">إخفاء</button>
+                </div>
+                <div id="exportResult" class="export-result"></div>
+            </div>
+            
+            <!-- 管理员入口按钮 - 默认完全隐藏，通过特定手势激活 -->
+            <div class="admin-access" id="adminAccess" style="display: none;">
+                <button onclick="showAdminSection()">دخول المسؤول</button>
+            </div>
+            
+            <!-- 跳转到抽奖页面 -->
+            <div class="admin-access">
+                <button onclick="goToAdminPage()">انتقال إلى صفحة السحب</button>
+            </div>
+            
+            <div class="language-switcher">
+                <button onclick="switchLanguage('en')">English</button>
+                <button onclick="switchLanguage('ar')">العربية</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="register-script.js"></script>
+</body>
+</html>

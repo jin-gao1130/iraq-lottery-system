@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danaher Lottery Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- 添加 Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- 公司Logo区域 -->
+    <div class="logo-header">
+        <div class="logo-container">
+            <img src="danaher-logo.png" alt="Danaher Logo" class="company-logo">
+        </div>
+        <div class="admin-badge">لوحة التحكم</div>
+    </div>
+    
+    <!-- 主内容区域 -->
+    <div class="container">
+        <div class="lottery-section">
+            <h1>لوحة سحب الجوائز</h1>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">إجمالي المشاركين:</span>
+                    <span id="totalParticipants">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">الجوائز المتبقية:</span>
+                    <span id="prizesRemaining">10</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">الفائزون حتى الآن:</span>
+                    <span id="winnersCount">0</span>
+                </div>
+            </div>
+            
+            <!-- 实时连接状态 -->
+            <div class="connection-status">
+                <span id="connectionStatus">جاري الاتصال...</span>
+            </div>
+            
+            <!-- 数据导入区域 -->
+            <div class="data-import-section">
+                <h3>استيراد البيانات</h3>
+                <p>انسخ البيانات من صفحة التسجيل والصقها هنا:</p>
+                <textarea id="importData" placeholder="الصق بيانات التسجيل هنا..." rows="5"></textarea>
+                <div class="import-controls">
+                    <button onclick="importData()">استيراد البيانات</button>
+                    <button onclick="clearImport()">مسح</button>
+                </div>
+                <div id="importResult" class="import-result"></div>
+            </div>
+            
+            <div class="lottery-display">
+                <div id="currentDisplay" class="current-display">
+                    جاهز للبدء...
+                </div>
+            </div>
+            
+            <div class="lottery-controls">
+                <button id="startButton" onclick="startLottery()">بدء السحب</button>
+                <button id="stopButton" onclick="stopLottery()" disabled>توقف واختيار الفائز</button>
+                <button onclick="resetLottery()">إعادة تعيين السحب</button>
+            </div>
+            
+            <div class="participants-section">
+                <h2>قائمة المشاركين (<span id="participantsCount">0</span>)</h2>
+                <div id="participantsList" class="participants-list"></div>
+            </div>
+            
+            <div class="winners-section">
+                <h2>الفائزون (<span id="winnersListCount">0</span>)</h2>
+                <div id="winnersList" class="winners-list"></div>
+            </div>
+            
+            <div class="language-switcher">
+                <button onclick="switchLanguage('en')">English</button>
+                <button onclick="switchLanguage('ar')">العربية</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>
