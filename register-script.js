@@ -1,4 +1,4 @@
-// register-script.js - 修改后的版本
+// register-script.js - 简化版本 (移除了管理员功能)
 const translations = {
     en: {
         registrationTitle: "Client Registration",
@@ -8,8 +8,8 @@ const translations = {
         eventInfoTitle: "Event Information",
         eventInfo1: "The lottery will be held at the end of the meeting and winners will be announced on stage.",
         eventInfo2: "Participants who have already won will be excluded from subsequent rounds.",
-        registrationSuccess: "Registration successful! Your lottery number is:",
-        alreadyRegistered: "You are already registered! Your number is:",
+        registrationSuccess: "Registration successful!",
+        alreadyRegistered: "You are already registered!",
         nameRequired: "Please enter your name",
         connectionError: "Connection error, please try again"
     },
@@ -21,8 +21,8 @@ const translations = {
         eventInfoTitle: "معلومات الفعالية",
         eventInfo1: "سيتم إجراء السحب في نهاية الاجتماع وسيتم الإعلان عن الفائزين على المسرح.",
         eventInfo2: "سيتم استبعاد المشاركين الذين فازوا بالفعل من الجولات اللاحقة.",
-        registrationSuccess: "تم التسجيل بنجاح! رقم السحب الخاص بك هو:",
-        alreadyRegistered: "أنت مسجل بالفعل! رقمك هو:",
+        registrationSuccess: "تم التسجيل بنجاح!",
+        alreadyRegistered: "أنت مسجل بالفعل!",
         nameRequired: "يرجى إدخال اسمك",
         connectionError: "خطأ في الاتصال، يرجى المحاولة مرة أخرى"
     }
@@ -33,6 +33,13 @@ let currentLanguage = 'ar';
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
     applyTranslations(currentLanguage);
+    
+    // 允许按Enter键提交表单
+    document.getElementById('clientName').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            registerClient();
+        }
+    });
 });
 
 // 切换语言
@@ -57,10 +64,9 @@ function applyTranslations(lang) {
     document.querySelector('.event-info h3').textContent = t.eventInfoTitle;
     document.querySelectorAll('.event-info p')[0].textContent = t.eventInfo1;
     document.querySelectorAll('.event-info p')[1].textContent = t.eventInfo2;
-    
 }
 
-// 注册客户 - 修改为使用Firebase
+// 注册客户 - 使用Firestore
 async function registerClient() {
     const nameInput = document.getElementById('clientName');
     const name = nameInput.value.trim();
@@ -72,39 +78,33 @@ async function registerClient() {
     
     try {
         // 检查是否已经注册
-        const snapshot = await database.ref('participants').once('value');
-        const participants = snapshot.val() || {};
+        const clientsRef = db.collection('clients');
+        const snapshot = await clientsRef
+            .where('name', '==', name)
+            .get();
         
-        const existingParticipant = Object.values(participants).find(
-            p => p.name.toLowerCase() === name.toLowerCase()
-        );
-        
-        if (existingParticipant) {
-            showRegistrationResult(
-                `${translations[currentLanguage].alreadyRegistered} ${existingParticipant.id}`, 
-                'info'
-            );
+        if (!snapshot.empty) {
+            showRegistrationResult(translations[currentLanguage].alreadyRegistered, 'info');
             nameInput.value = '';
             return;
         }
         
-        // 生成唯一ID
-        const id = generateUniqueId(participants);
-        const participant = { 
-            name, 
-            id, 
-            won: false,
-            timestamp: Date.now()
-        };
+        // 保存到 Firestore
+        await clientsRef.add({
+            name: name,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            registered: true
+        });
         
-        // 保存到 Firebase
-        await database.ref('participants/' + id).set(participant);
-        
-        showRegistrationResult(
-            `${translations[currentLanguage].registrationSuccess} ${id}`, 
-            'success'
-        );
+        showRegistrationResult(translations[currentLanguage].registrationSuccess, 'success');
         nameInput.value = '';
+        
+        // 3秒后清除成功消息
+        setTimeout(() => {
+            const resultDiv = document.getElementById('registrationResult');
+            resultDiv.textContent = '';
+            resultDiv.className = 'registration-result';
+        }, 3000);
         
     } catch (error) {
         console.error('Registration error:', error);
@@ -112,23 +112,10 @@ async function registerClient() {
     }
 }
 
-// 生成唯一ID
-function generateUniqueId(participants) {
-    let id;
-    let isUnique = false;
-    
-    while (!isUnique) {
-        id = Math.floor(Math.random() * 9000) + 1000;
-        isUnique = !participants[id];
-    }
-    
-    return id;
-}
-
 // 显示注册结果
 function showRegistrationResult(message, type) {
     const resultDiv = document.getElementById('registrationResult');
-    resultDiv.innerHTML = message;
+    resultDiv.textContent = message;
     
     // 根据类型设置样式
     resultDiv.className = 'registration-result';
