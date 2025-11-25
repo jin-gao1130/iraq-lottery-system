@@ -12,8 +12,6 @@ const translations = {
         noParticipants: "No participants available",
         allPrizesAwarded: "All prizes have been awarded!",
         winnerText: "WINNER!",
-        
-        
         connected: "Connected - Real-time",
         disconnected: "Disconnected",
         connecting: "Connecting..."
@@ -42,7 +40,7 @@ let participants = {};
 let winners = {};
 let lotteryInterval;
 let isLotteryRunning = false;
-const TOTAL_PRIZES = 10;
+const TOTAL_PRIZES = 8;
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
@@ -251,3 +249,4 @@ function playWinnerSound() {
         console.log('Audio not available');
     }
 }
+
