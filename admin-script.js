@@ -43,7 +43,7 @@ let participants = {};
 let winners = {};
 let lotteryInterval;
 let isLotteryRunning = false;
-const TOTAL_PRIZES = 8;
+const TOTAL_PRIZES = 10;
 
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
@@ -277,4 +277,5 @@ function playWinnerSound() {
         console.log('Audio not available');
     }
 }
+
 
